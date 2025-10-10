@@ -261,13 +261,14 @@
 
         // Load tables from Google Sheets
         async function loadTables() {
+            const userSelect = document.getElementById('userSelect');
+            userSelect.disabled = true; // Disable dropdown during loading
             document.getElementById('loadingTableIcon').style.display = 'block';
             try {
                 const response = await fetch(sheetsUrl);
                 if (response.ok) {
                     const data = await response.json();
                     const tables = [...new Set(data.map(row => row.Tabela))]; // Get unique tables from first column
-                    const userSelect = document.getElementById('userSelect');
                     userSelect.innerHTML = '<option value="">Selecione uma tabela</option>';
                     tables.forEach(table => {
                         if (table) {
@@ -283,7 +284,6 @@
                 }
             } catch (error) {
                 console.warn('Falha ao carregar tabelas, usando dados de teste:', error);
-                const userSelect = document.getElementById('userSelect');
                 userSelect.innerHTML = '<option value="">Selecione uma tabela</option>';
                 testData.forEach(row => {
                     const option = document.createElement('option');
@@ -294,6 +294,7 @@
                 document.getElementById('loginButton').disabled = false;
             } finally {
                 document.getElementById('loadingTableIcon').style.display = 'none';
+                userSelect.disabled = false; // Re-enable dropdown after loading
             }
         }
 
