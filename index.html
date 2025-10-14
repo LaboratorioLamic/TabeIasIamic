@@ -241,9 +241,9 @@
     </table>
 
     <script>
-        const sheetsUrl = 'https://script.google.com/macros/s/AKfycbwAvZJWmNly2RqEo21Tn-4-vFMK3cHQF6Oc-aV-2dzzisTM6ljf4nVY7uJjDnbWe-0/exec';
+        const sheetsUrl = 'https://script.google.com/macros/s/AKfycbyOXy3_TOFCqyZGmYzLggqhljlvgG80E-qqexJeJCTTcQpfMaTCudPnqOAptnW9qP-T/exec';
         const testData = [
-            { Tabela: 'Nenhuma Tabela', Exame: 'Nenhum Exame Carregado', Valor: null },
+            { Tabela: 'Nenhuma Tabela', Exame: 'Nenhum Exame Carregado', Valor: null, Material: '-', Prazo: '-' },
         ];
         let examsData = {};
         let currentTable = '';
@@ -402,13 +402,13 @@
             const rows = Object.keys(examsData).map(exame => {
                 const data = examsData[exame];
                 const valorStr = data.valor !== undefined && !isNaN(data.valor) ? `R$ ${data.valor.toFixed(2)}` : 'N/A';
-                return [exame, valorStr];
+                return [exame, data.material || 'N/A', data.prazo || 'N/A', valorStr];
             });
 
             // Add table using autoTable
             doc.autoTable({
                 startY: startY + 20,
-                head: [['Exame', 'Valor']],
+                head: [['Exame', 'Material', 'Prazo', 'Valor']],
                 body: rows,
                 theme: 'striped',
                 styles: { 
@@ -419,8 +419,10 @@
                     fontStyle: 'normal'
                 },
                 columnStyles: {
-                    0: { cellWidth: 150 },
-                    1: { cellWidth: 40 }
+                    0: { cellWidth: 100 }, // Exame
+                    1: { cellWidth: 35 }, // Material
+                    2: { cellWidth: 32 }, // Prazo
+                    3: { cellWidth: 32 }  // Valor
                 },
                 headStyles: { 
                     fillColor: [26, 43, 95],
@@ -460,8 +462,10 @@
                 if (row.Tabela === currentTable) {
                     const exame = row.Exame;
                     const valor = parseFloat(row.Valor);
+                    const material = row.Material;
+                    const prazo = row.Prazo;
                     if (exame && !isNaN(valor)) {
-                        examsData[exame] = { valor };
+                        examsData[exame] = { valor, material, prazo };
                     }
                 }
             });
@@ -473,7 +477,7 @@
 
         function renderTableHeader() {
             const header = document.getElementById('tableHeader');
-            header.innerHTML = '<tr><th>Exame</th><th>Valor</th></tr>';
+            header.innerHTML = '<tr><th>Exame</th><th>Material Biológico</th><th>Prazo</th><th>Valor</th></tr>';
         }
 
         function renderTable(exams) {
@@ -481,9 +485,9 @@
             body.innerHTML = '';
             exams.forEach(exame => {
                 const row = document.createElement('tr');
-                const data = examsData[exame] || { valor: 'N/A' };
+                const data = examsData[exame] || { valor: 'N/A', material: 'N/A', prazo: 'N/A' };
                 const displayValor = data.valor !== 'N/A' && !isNaN(data.valor) ? `R$ ${data.valor.toFixed(2)}` : 'N/A';
-                row.innerHTML = `<td>${exame}</td><td>${displayValor}</td>`;
+                row.innerHTML = `<td>${exame}</td><td>${data.material || 'N/A'}</td><td>${data.prazo || 'N/A'}</td><td>${displayValor}</td>`;
                 body.appendChild(row);
             });
         }
