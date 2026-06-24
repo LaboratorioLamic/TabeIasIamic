@@ -864,13 +864,6 @@ Laboratório LAMIC`;
             loadTables();
         });
 
-        // Clear open tooltips on page restore (bfcache)
-        window.addEventListener('pageshow', () => {
-            document.querySelectorAll('.instruction-cell.active').forEach(cell => {
-                cell.classList.remove('active');
-            });
-        });
-
         function ctrlShiftKey(e, keyCode) {
             return e.ctrlKey && e.shiftKey && e.keyCode === keyCode.charCodeAt(0);
         }
